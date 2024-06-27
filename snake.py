@@ -11,7 +11,7 @@ class Snake:
     def initialize(self):
         pygame.init()
 
-        self.scale = 15
+        self.scale = 25
         self.height = 25
         self.width = 25
         self.fps = 120
@@ -21,9 +21,10 @@ class Snake:
         self.pixel_size = (self.scale - 2, self.scale - 2)
         self.white = (255, 255, 255)
         self.red = (255, 0, 0)
+        self.is_start_screen = True
         self.gameover = False
         self.score = 0
-        self.game_font = pygame.font.SysFont("Arial", 24)
+        self.game_font = pygame.font.SysFont("Arial", 20)
 
         self.empty_grid = []
         for x in range(self.width):
@@ -47,7 +48,7 @@ class Snake:
         while (True):
             self.check_event()
             if counter % (self.fps // self.screen_refresh_rate) == 0:
-                if not self.gameover:
+                if not self.gameover and not self.is_start_screen:
                     self.update_snake()
                 self.update_screen()
             self.clock.tick(self.fps)
@@ -64,6 +65,9 @@ class Snake:
                     self.direction = 2
                 if event.key == pygame.K_LEFT and self.previous_direction != 1:
                     self.direction = 3
+
+                if self.is_start_screen and event.key == pygame.K_SPACE:
+                    self.is_start_screen = False
 
                 if self.gameover and event.key == pygame.K_r:
                     self.initialize()
@@ -89,11 +93,25 @@ class Snake:
             f"Score: {self.score}", True, (0, 0, 255))
         self.screen.blit(score, (5, 5))
 
+        if self.is_start_screen:
+            start = self.game_font.render(
+                f"Press spacebar to start", True, (0, 0, 255))
+            control = self.game_font.render(
+                f"Use the arrow keys to change the direction of the snake", True, (0, 0, 255))
+            goal = self.game_font.render(
+                f"Eat red fruits to grow and don't hit the border or snake's own body", True, (0, 0, 255))
+            self.screen.blit(goal, (self.width * self.scale / 2 - goal.get_width() /
+                                    2, self.height * self.scale / 2 - goal.get_height() / 2 - 150))
+            self.screen.blit(control, (self.width * self.scale / 2 - control.get_width() /
+                                       2, self.height * self.scale / 2 - control.get_height() / 2 - 100))
+            self.screen.blit(start, (self.width * self.scale / 2 - start.get_width() /
+                                     2, self.height * self.scale / 2 - start.get_height() / 2 - 50))
+
         if self.gameover:
             gameover = self.game_font.render(
                 f"Gameover", True, (0, 0, 255))
             restart = self.game_font.render(
-                f"Press r to Restart", True, (0, 0, 255))
+                f"Press r to restart", True, (0, 0, 255))
             self.screen.blit(gameover, (self.width * self.scale / 2 - gameover.get_width() /
                                         2, self.height * self.scale / 2 - gameover.get_height() / 2))
             self.screen.blit(restart, (self.width * self.scale / 2 - restart.get_width() /
